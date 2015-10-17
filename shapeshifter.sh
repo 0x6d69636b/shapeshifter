@@ -9,7 +9,7 @@
 # -----
 # Variables
 # -----
-VERSION="0.5.0"
+VERSION="0.5.1"
 CMD_FFMPEG="/opt/ffmpeg/ffmpeg"
 CMD_NPROC=`which nproc`
 THREADS=$((`$CMD_NPROC` - 1))
@@ -127,16 +127,18 @@ CreateOgg() {
 }
 
 # -----
-# .webm | VPX8
-# based on https://www.virag.si/2012/01/webm-web-video-encoding-tutorial-with-ffmpeg-0-9/ | http://www.webmproject.org/docs/encoder-parameters/ | http://trac.ffmpeg.org/wiki/Encode/VP8
+# .webm | VPX9
+# based on https://sites.google.com/a/webmproject.org/wiki/ffmpeg/vp9-encoding-guide
 # -----
 CreateWebm() {
 	# 720p
-	$CMD_FFMPEG -y -threads $THREADS -i $INPUTFILE -metadata title="$TITLE" -metadata author="$AUTHOR" -c:v libvpx -b:v 7000k -vf scale=-1:720 -quality best -pass 1 -an -f webm $OUTPUTNAME.webm
-	$CMD_FFMPEG -y -threads $THREADS -i $INPUTFILE -metadata title="$TITLE" -metadata author="$AUTHOR" -c:v libvpx -b:v 7000k -vf scale=-1:720 -quality best -pass 2 -c:a libvorbis -b:a 256k -f webm $OUTPUTNAME.webm
+	#$CMD_FFMPEG -y -threads $THREADS -i $INPUTFILE -metadata title="$TITLE" -metadata author="$AUTHOR" -c:v libvpx -b:v 7000k -vf scale=-1:720 -quality best -pass 1 -an -f webm $OUTPUTNAME.webm
+	#$CMD_FFMPEG -y -threads $THREADS -i $INPUTFILE -metadata title="$TITLE" -metadata author="$AUTHOR" -c:v libvpx -b:v 7000k -vf scale=-1:720 -quality best -pass 2 -c:a libvorbis -b:a 256k -f webm $OUTPUTNAME.webm
+	$CMD_FFMPEG -y -threads $THREADS -i $INPUTFILE -c:v libvpx-vp9 -b:v 1000k -vf scale=-1:720 -pass 1 -speed 4 -tile-columns 0 -frame-parallel 0 -g 9999 -aq-mode 0 -an -f webm /dev/null
+	$CMD_FFMPEG -y -threads $THREADS -i $INPUTFILE -c:v libvpx-vp9 -b:v 1000k -vf scale=-1:720 -pass 2 -speed 0 -tile-columns 0 -frame-parallel 0 -auto-alt-ref 1 -lag-in-frames 25 -g 9999 -aq-mode 0 -c:a libopus -b:a 128k -f webm -metadata title="$TITLE" -metadata author="$AUTHOR" $OUTPUTNAME"_hd.webm"
 	# 360p
-	$CMD_FFMPEG -y -threads $THREADS -i $INPUTFILE -metadata title="$TITLE" -metadata author="$AUTHOR" -c:v libvpx -b:v 3500k -vf scale=-1:360 -quality best -pass 1 -an -f webm /dev/null
-	$CMD_FFMPEG -y -threads $THREADS -i $INPUTFILE -metadata title="$TITLE" -metadata author="$AUTHOR" -c:v libvpx -b:v 3500k -vf scale=-1:360 -quality best -pass 2 -c:a libvorbis -b:a 256k -f webm $OUTPUTNAME-small.webm
+	#$CMD_FFMPEG -y -threads $THREADS -i $INPUTFILE -metadata title="$TITLE" -metadata author="$AUTHOR" -c:v libvpx -b:v 3500k -vf scale=-1:360 -quality best -pass 1 -an -f webm /dev/null
+	#$CMD_FFMPEG -y -threads $THREADS -i $INPUTFILE -metadata title="$TITLE" -metadata author="$AUTHOR" -c:v libvpx -b:v 3500k -vf scale=-1:360 -quality best -pass 2 -c:a libvorbis -b:a 256k -f webm $OUTPUTNAME-small.webm
 }
 
 # -----
