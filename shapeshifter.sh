@@ -89,6 +89,9 @@ CheckParams() {
 	fi
 }
 
+# -----
+# Start the different encoding commands
+# -----
 StartEncoding() {
 	case $FORMAT in
 		"all")
@@ -112,52 +115,45 @@ StartEncoding() {
 	esac
 }
 
-# --
+# -----
 # .ogg | Theora
 # based http://trac.ffmpeg.org/wiki/GuidelinesHighQualityAudio | http://trac.ffmpeg.org/wiki/TheoraVorbisEncodingGuide
-#
+# -----
 CreateOgg() {
 	# 720p
-	$CMD_FFMPEG -y -threads $THREADS -i $INPUTFILE -metadata title="$TITLE" -metadata author="$AUTHOR" -metadata compatible_brands="$COMPATIBLEBRANDS" -metadata major_brand="$MAJORBRAND" -metadata minor_version="$MINORVERSION" -c:v libtheora -vf scale=-1:720 -b:v 7000k -qscale:v 8 -c:a libopus -b:a 256k $OUTPUTNAME.ogg
-
+	$CMD_FFMPEG -y -threads $THREADS -i $INPUTFILE -c:v libtheora -vf scale=-1:720 -b:v 1000k -qscale:v 8 -c:a libopus -b:a 128k -f ogg -metadata title="$TITLE" -metadata author="$AUTHOR" -metadata compatible_brands="$COMPATIBLEBRANDS" -metadata major_brand="$MAJORBRAND" -metadata minor_version="$MINORVERSION" $OUTPUTNAME"_hd.ogg"
 	# 360p
-	$CMD_FFMPEG -y -threads $THREADS -i $INPUTFILE -metadata title="$TITLE" -metadata author="$AUTHOR" -metadata compatible_brands="$COMPATIBLEBRANDS" -metadata major_brand="$MAJORBRAND" -metadata minor_version="$MINORVERSION" -c:v libtheora -vf scale=-1:360 -b:v 7000k -qscale:v 8 -c:a libopus -b:a 256k $OUTPUTNAME-small.ogg
+	$CMD_FFMPEG -y -threads $THREADS -i $INPUTFILE -c:v libtheora -vf scale=-1:360 -b:v 1000k -qscale:v 8 -c:a libopus -b:a 128k -f ogg -metadata title="$TITLE" -metadata author="$AUTHOR" -metadata compatible_brands="$COMPATIBLEBRANDS" -metadata major_brand="$MAJORBRAND" -metadata minor_version="$MINORVERSION" $OUTPUTNAME"_lq.ogg"
 }
 
-# --
+# -----
 # .webm | VPX8
 # based on https://www.virag.si/2012/01/webm-web-video-encoding-tutorial-with-ffmpeg-0-9/ | http://www.webmproject.org/docs/encoder-parameters/ | http://trac.ffmpeg.org/wiki/Encode/VP8
-#
+# -----
 CreateWebm() {
 	# 720p
 	$CMD_FFMPEG -y -threads $THREADS -i $INPUTFILE -metadata title="$TITLE" -metadata author="$AUTHOR" -c:v libvpx -b:v 7000k -vf scale=-1:720 -quality best -pass 1 -an -f webm $OUTPUTNAME.webm
 	$CMD_FFMPEG -y -threads $THREADS -i $INPUTFILE -metadata title="$TITLE" -metadata author="$AUTHOR" -c:v libvpx -b:v 7000k -vf scale=-1:720 -quality best -pass 2 -c:a libvorbis -b:a 256k -f webm $OUTPUTNAME.webm
-
 	# 360p
 	$CMD_FFMPEG -y -threads $THREADS -i $INPUTFILE -metadata title="$TITLE" -metadata author="$AUTHOR" -c:v libvpx -b:v 3500k -vf scale=-1:360 -quality best -pass 1 -an -f webm /dev/null
 	$CMD_FFMPEG -y -threads $THREADS -i $INPUTFILE -metadata title="$TITLE" -metadata author="$AUTHOR" -c:v libvpx -b:v 3500k -vf scale=-1:360 -quality best -pass 2 -c:a libvorbis -b:a 256k -f webm $OUTPUTNAME-small.webm
 }
 
-# --
+# -----
 # .mp4 | h264
 # based on https://www.virag.si/2012/01/web-video-encoding-tutorial-with-ffmpeg-0-9/ | https://trac.ffmpeg.org/wiki/Encode/H.264
-#
+# -----
 CreateH264() {
 	# 720p
 	$CMD_FFMPEG -y -threads 0 -i $INPUTFILE -metadata title="$TITLE" -metadata author="$AUTHOR" -c:v libx264 -vprofile high -preset veryslow -b:v 7000k -vf scale=-1:720 -pass 1 -an -f mp4 /dev/null
 	$CMD_FFMPEG -y -threads 0 -i $INPUTFILE -metadata title="$TITLE" -metadata author="$AUTHOR" -c:v libx264 -vprofile high -preset veryslow -b:v 7000k -vf scale=-1:720 -pass 2 -c:a libfdk_aac -b:a 256k -ar 44100 -strict experimental -f mp4 $OUTPUTNAME.mp4
-
 	# 360p
 	$CMD_FFMPEG -y -threads 0 -i $INPUTFILE -metadata title="$TITLE" -metadata author="$AUTHOR" -c:v libx264 -vprofile high -preset veryslow -b:v 3500k -vf scale=-1:360 -pass 1 -an -f mp4 /dev/null
 	$CMD_FFMPEG -y -threads 0 -i $INPUTFILE -metadata title="$TITLE" -metadata author="$AUTHOR" -c:v libx264 -vprofile high -preset veryslow -b:v 3500k -vf scale=-1:360 -pass 2 -c:a libfdk_aac -b:a 256k -ar 44100 -strict experimental -f mp4 $OUTPUTNAME-small.mp4
-
-	# 360p - legacy
-	#$CMD_FFMPEG -y -threads 0 -i $INPUTFILE -metadata title="$TITLE" -metadata author="$AUTHOR" -vcodec libx264 -vprofile high -preset slower -vb 3500k -vf scale=-1:360 -pass 1 -an -f mp4 /dev/null
-	#$CMD_FFMPEG -y -threads 0 -i $INPUTFILE -metadata title="$TITLE" -metadata author="$AUTHOR" -vcodec libx264 -vprofile high -preset slower -vb 3500k -vf scale=-1:360 -pass 2 -acodec aac -ab 128k -ar 44100 -strict experimental -f mp4 $OUTPUTNAME-legacy.mp4
 }
 
 # -----
-# main
+# Main
 # -----
 CheckParams $@
 StartEncoding
