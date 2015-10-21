@@ -3,13 +3,13 @@
 # Name: shapeshifter
 # Autor: Mick (mick@threelions.ch)
 # Date: 19-10-2015
-# Version: 0.5.2
+# Version: 0.5.3
 # -----
 
 # -----
 # Variables
 # -----
-VERSION="0.5.2"
+VERSION="0.5.3"
 CMD_FFMPEG="/opt/ffmpeg/ffmpeg"
 CMD_NPROC=`which nproc`
 THREADS=$((`$CMD_NPROC` - 1))
@@ -122,7 +122,7 @@ CreateOgg() {
 	# 720p
 	$CMD_FFMPEG -y -threads $THREADS -i $INPUTFILE -c:v libtheora -vf scale=-1:720 -b:v 7000k -qscale:v 8 -c:a libopus -b:a 128k -f ogg -metadata title="$TITLE" -metadata author="$AUTHOR" -metadata compatible_brands="$COMPATIBLEBRANDS" -metadata major_brand="$MAJORBRAND" -metadata minor_version="$MINORVERSION" $OUTPUTNAME"_hd.ogg"
 	# 360p
-	$CMD_FFMPEG -y -threads $THREADS -i $INPUTFILE -c:v libtheora -vf scale=-1:360 -b:v 7000k -qscale:v 8 -c:a libopus -b:a 128k -f ogg -metadata title="$TITLE" -metadata author="$AUTHOR" -metadata compatible_brands="$COMPATIBLEBRANDS" -metadata major_brand="$MAJORBRAND" -metadata minor_version="$MINORVERSION" $OUTPUTNAME"_lq.ogg"
+	$CMD_FFMPEG -y -threads $THREADS -i $INPUTFILE -c:v libtheora -vf scale=-1:360 -b:v 3500k -qscale:v 8 -c:a libopus -b:a 128k -f ogg -metadata title="$TITLE" -metadata author="$AUTHOR" -metadata compatible_brands="$COMPATIBLEBRANDS" -metadata major_brand="$MAJORBRAND" -metadata minor_version="$MINORVERSION" $OUTPUTNAME"_lq.ogg"
 }
 
 # -----
@@ -132,10 +132,10 @@ CreateOgg() {
 CreateWebm() {
 	# 720p
 	$CMD_FFMPEG -y -threads $THREADS -i $INPUTFILE -c:v libvpx-vp9 -b:v 7000k -vf scale=-1:720 -pass 1 -speed 4 -tile-columns 0 -frame-parallel 0 -g 9999 -aq-mode 0 -an -f webm /dev/null
-	$CMD_FFMPEG -y -threads $THREADS -i $INPUTFILE -c:v libvpx-vp9 -b:v 7000k -vf scale=-1:720 -pass 2 -speed 0 -tile-columns 0 -frame-parallel 0 -auto-alt-ref 1 -lag-in-frames 25 -g 9999 -aq-mode 0 -c:a libopus -b:a 128k -f webm -metadata title="$TITLE" -metadata author="$AUTHOR" $OUTPUTNAME"_hd.webm"
+	$CMD_FFMPEG -y -threads $THREADS -i $INPUTFILE -c:v libvpx-vp9 -b:v 7000k -vf scale=-1:720 -pass 2 -speed 1 -tile-columns 0 -frame-parallel 0 -auto-alt-ref 1 -lag-in-frames 25 -g 9999 -aq-mode 0 -c:a libopus -b:a 128k -f webm -metadata title="$TITLE" -metadata author="$AUTHOR" $OUTPUTNAME"_hd.webm"
 	# 360p
-	$CMD_FFMPEG -y -threads $THREADS -i $INPUTFILE -c:v libvpx-vp9 -b:v 7000k -vf scale=-1:360 -pass 1 -speed 4 -tile-columns 0 -frame-parallel 0 -g 9999 -aq-mode 0 -an -f webm /dev/null
-	$CMD_FFMPEG -y -threads $THREADS -i $INPUTFILE -c:v libvpx-vp9 -b:v 7000k -vf scale=-1:360 -pass 2 -speed 0 -tile-columns 0 -frame-parallel 0 -auto-alt-ref 1 -lag-in-frames 25 -g 9999 -aq-mode 0 -c:a libopus -b:a 128k -f webm -metadata title="$TITLE" -metadata author="$AUTHOR" $OUTPUTNAME"_lq.webm"
+	$CMD_FFMPEG -y -threads $THREADS -i $INPUTFILE -c:v libvpx-vp9 -b:v 3500k -vf scale=-1:360 -pass 1 -speed 4 -tile-columns 0 -frame-parallel 0 -g 9999 -aq-mode 0 -an -f webm /dev/null
+	$CMD_FFMPEG -y -threads $THREADS -i $INPUTFILE -c:v libvpx-vp9 -b:v 3500k -vf scale=-1:360 -pass 2 -speed 1 -tile-columns 0 -frame-parallel 0 -auto-alt-ref 1 -lag-in-frames 25 -g 9999 -aq-mode 0 -c:a libopus -b:a 128k -f webm -metadata title="$TITLE" -metadata author="$AUTHOR" $OUTPUTNAME"_lq.webm"
 }
 
 # -----
@@ -147,8 +147,8 @@ CreateH264() {
 	$CMD_FFMPEG -y -threads 0 -i $INPUTFILE -c:v libx264 -vprofile high -preset veryslow -b:v 7000k -vf scale=-1:720 -pass 1 -an -f mp4 /dev/null
 	$CMD_FFMPEG -y -threads 0 -i $INPUTFILE -c:v libx264 -vprofile high -preset veryslow -b:v 7000k -vf scale=-1:720 -pass 2 -c:a libfdk_aac -b:a 192k -ar 44100 -strict experimental -metadata title="$TITLE" -metadata author="$AUTHOR" -f mp4 $OUTPUTNAME"_hd.mp4"
 	# 360p
-	$CMD_FFMPEG -y -threads 0 -i $INPUTFILE -c:v libx264 -vprofile high -preset veryslow -b:v 7000k -vf scale=-1:360 -pass 1 -an -f mp4 /dev/null
-	$CMD_FFMPEG -y -threads 0 -i $INPUTFILE -c:v libx264 -vprofile high -preset veryslow -b:v 7000k -vf scale=-1:360 -pass 2 -c:a libfdk_aac -b:a 192k -ar 44100 -strict experimental -metadata title="$TITLE" -metadata author="$AUTHOR" -f mp4 $OUTPUTNAME"_lq.mp4"
+	$CMD_FFMPEG -y -threads 0 -i $INPUTFILE -c:v libx264 -vprofile high -preset veryslow -b:v 3500k -vf scale=-1:360 -pass 1 -an -f mp4 /dev/null
+	$CMD_FFMPEG -y -threads 0 -i $INPUTFILE -c:v libx264 -vprofile high -preset veryslow -b:v 3500k -vf scale=-1:360 -pass 2 -c:a libfdk_aac -b:a 192k -ar 44100 -strict experimental -metadata title="$TITLE" -metadata author="$AUTHOR" -f mp4 $OUTPUTNAME"_lq.mp4"
 }
 
 # -----
