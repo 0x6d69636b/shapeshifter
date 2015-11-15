@@ -2,14 +2,14 @@
 # -----
 # Name: shapeshifter
 # Autor: Mick (mick@threelions.ch)
-# Date: 19-10-2015
-# Version: 0.5.3
+# Date: 15-11-2015
+# Version: 0.6.0
 # -----
 
 # -----
 # Variables
 # -----
-VERSION="0.5.3"
+VERSION="0.6.0"
 CMD_FFMPEG="/opt/ffmpeg/ffmpeg"
 CMD_NPROC=`which nproc`
 THREADS=$((`$CMD_NPROC` - 1))
@@ -21,6 +21,7 @@ AUTHOR=
 COMPATIBLEBRANDS=""
 MAJORBRAND=""
 MINORVERSION=""
+PALETTE="/tmp/palette.png"
 
 # -----
 # display help
@@ -28,7 +29,7 @@ MINORVERSION=""
 Usage() {
 	echo "Usage: ${0##*/} [-hv] [-f FORMAT] [-i FILE] [-o OUTPUT FILENAME] [-t TITLE] [-a ARTIST]..."
 	echo "    -h                         display this help and exit"
-	echo "    -f <all|h264|webm|ogg>     media formats"
+	echo "    -f <all|h264|webm|ogg|gif> media formats"
 	echo "    -i <file>                  input file"
 	echo "    -o <name>                  output file name (without extension)"
 	echo "    -t <name>                  title of the film"
@@ -107,6 +108,9 @@ StartEncoding() {
 		"h264")
 			CreateH264
 			;;
+		"gif")
+				CreateGif
+				;;
 		*)
 			echo "[!] Invalid option for media format: -$FORMAT" >&2
 			exit 4
@@ -149,6 +153,15 @@ CreateH264() {
 	# 360p
 	$CMD_FFMPEG -y -threads 0 -i $INPUTFILE -c:v libx264 -vprofile high -preset veryslow -b:v 3500k -vf scale=-1:360 -pass 1 -an -f mp4 /dev/null
 	$CMD_FFMPEG -y -threads 0 -i $INPUTFILE -c:v libx264 -vprofile high -preset veryslow -b:v 3500k -vf scale=-1:360 -pass 2 -c:a libfdk_aac -b:a 192k -ar 44100 -strict experimental -metadata title="$TITLE" -metadata author="$AUTHOR" -f mp4 $OUTPUTNAME"_lq.mp4"
+}
+
+# -----
+# .gif | GIF
+# based on http://blog.pkh.me/p/21-high-quality-gif-with-ffmpeg.html
+# -----
+CreateGif() {
+	$CMD_FFMPEG -y -i $INPUTFILE -vf "fps=15,scale=700:-1:flags=lanczos,palettegen" $PALETTE
+	$CMD_FFMPEG -y -i $INPUTFILE -i $PALETTE -lavfi "fps=15,scale=700:-1:flags=lanczos [x]; [x][1:v] paletteuse" $OUTPUTNAME".gif"
 }
 
 # -----
