@@ -2,14 +2,14 @@
 # -----
 # Name: shapeshifter
 # Autor: Mick (mick@threelions.ch)
-# Date: 23-03-2016
-# Version: 0.7.0
+# Date: 26-03-2016
+# Version: 0.7.1
 # -----
 
 # -----
 # Variables
 # -----
-VERSION="0.7.0"
+VERSION="0.7.1"
 CMD_FFMPEG="/opt/ffmpeg/ffmpeg"
 CMD_NPROC=`which nproc`
 THREADS=$((`$CMD_NPROC` - 1))
@@ -162,7 +162,7 @@ CreateOgg() {
 # based on https://sites.google.com/a/webmproject.org/wiki/ffmpeg/vp9-encoding-guide
 # -----
 CreateVP9() {
-	$CMD_FFMPEG -y -threads $THREADS -i $INPUTFILE -c:v libvpx-vp9 -r $FRAMES -b:v $VIDEOBITRATE -vf scale=-1:$SCALE -pass 1 -speed 4 -tile-columns 0 -frame-parallel 0 -g 9999 -aq-mode 0 -an -f webm /dev/null
+	$CMD_FFMPEG -y -threads $THREADS -i $INPUTFILE -c:v libvpx-vp9 -r $FRAMES -b:v $VIDEOBITRATE -vf scale=-1:$SCALE -pass 1 -speed 4 -tile-columns 0 -frame-parallel 0 -g 9999 -aq-mode 0 -c:a libopus -b:a 128k -f webm /dev/null
 	$CMD_FFMPEG -y -threads $THREADS -i $INPUTFILE -c:v libvpx-vp9 -r $FRAMES -b:v $VIDEOBITRATE -vf scale=-1:$SCALE -pass 2 -speed 1 -tile-columns 0 -frame-parallel 0 -auto-alt-ref 1 -lag-in-frames 25 -g 9999 -aq-mode 0 -c:a libopus -b:a 128k -f webm -metadata title="$TITLE" -metadata author="$AUTHOR" $OUTPUTNAME"_"$SCALE"_vp9.webm"
 }
 
@@ -170,7 +170,7 @@ CreateVP9() {
 # .webm | VP8
 # -----
 CreateVP8() {
-	$CMD_FFMPEG -y -threads $THREADS -i $INPUTFILE -c:v libvpx -r $FRAMES -b:v $VIDEOBITRATE -vf scale=-1:$SCALE -pass 1 -speed 4 -g 9999 -an -f webm /dev/null
+	$CMD_FFMPEG -y -threads $THREADS -i $INPUTFILE -c:v libvpx -r $FRAMES -b:v $VIDEOBITRATE -vf scale=-1:$SCALE -pass 1 -speed 4 -g 9999 -c:a libopus -b:a 128k -f webm /dev/null
 	$CMD_FFMPEG -y -threads $THREADS -i $INPUTFILE -c:v libvpx -r $FRAMES -b:v $VIDEOBITRATE -vf scale=-1:$SCALE -pass 2 -speed 1 -auto-alt-ref 1 -lag-in-frames 25 -g 9999 -c:a libopus -b:a 128k -f webm -metadata title="$TITLE" -metadata author="$AUTHOR" $OUTPUTNAME"_"$SCALE".webm"
 }
 
@@ -179,7 +179,7 @@ CreateVP8() {
 # based on https://www.virag.si/2012/01/web-video-encoding-tutorial-with-ffmpeg-0-9/ | https://trac.ffmpeg.org/wiki/Encode/H.264
 # -----
 CreateH264() {
-	$CMD_FFMPEG -y -threads 0 -i $INPUTFILE -c:v libx264 -r $FRAMES -vprofile high -preset veryslow -b:v $VIDEOBITRATE -vf scale=-1:$SCALE -pass 1 -an -f mp4 /dev/null
+	$CMD_FFMPEG -y -threads 0 -i $INPUTFILE -c:v libx264 -r $FRAMES -vprofile high -preset veryslow -b:v $VIDEOBITRATE -vf scale=-1:$SCALE -pass 1 -c:a libfdk_aac -b:a 192k -ar 44100 -strict experimental -f mp4 /dev/null
 	$CMD_FFMPEG -y -threads 0 -i $INPUTFILE -c:v libx264 -r $FRAMES -vprofile high -preset veryslow -b:v $VIDEOBITRATE -vf scale=-1:$SCALE -pass 2 -c:a libfdk_aac -b:a 192k -ar 44100 -strict experimental -metadata title="$TITLE" -metadata author="$AUTHOR" -f mp4 $OUTPUTNAME"_"$SCALE".mp4"
 }
 
@@ -188,7 +188,7 @@ CreateH264() {
 # based on https://trac.ffmpeg.org/wiki/Encode/H.265
 # -----
 CreateH265() {
-	$CMD_FFMPEG -y -threads 0 -i $INPUTFILE -c:v libx265 -r $FRAMES -preset veryslow -b:v $VIDEOBITRATE  -vf scale=-1:$SCALE -pass 1 -an -f mp4 /dev/null
+	$CMD_FFMPEG -y -threads 0 -i $INPUTFILE -c:v libx265 -r $FRAMES -preset veryslow -b:v $VIDEOBITRATE  -vf scale=-1:$SCALE -pass 1 -c:a libfdk_aac -b:a 192k -ar 44100 -strict experimental -f mp4 /dev/null
 	$CMD_FFMPEG -y -threads 0 -i $INPUTFILE -c:v libx265 -r $FRAMES -preset veryslow -b:v $VIDEOBITRATE  -vf scale=-1:$SCALE -pass 2 -c:a libfdk_aac -b:a 192k -ar 44100 -strict experimental -metadata title="$TITLE" -metadata author="$AUTHOR" -f mp4 $OUTPUTNAME"_"$SCALE"_h265.mp4"
 }
 
