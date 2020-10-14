@@ -3,13 +3,13 @@
 # Name: shapeshifter
 # Autor: Mick (mick@threelions.ch)
 # Date: 14-10-2020
-# Version: 0.7.3
+# Version: 0.8.0
 # -----
 
 # -----
 # Variables
 # -----
-VERSION="0.7.3"
+VERSION="0.8.0"
 CMD_FFMPEG=`which ffmpeg`
 CMD_NPROC=`which nproc`
 THREADS=$((`$CMD_NPROC` - 1))
@@ -31,15 +31,15 @@ VIDEOBITRATE=""
 # -----
 Usage() {
 	echo "Usage: ${0##*/} [-hv] [-f FORMAT] [-r FRAMES] [-s SCALE] [-i FILE] [-o OUTPUT FILENAME] [-t TITLE] [-a ARTIST]..."
-	echo "    -h                         display this help and exit"
-	echo "    -f <all|h264|h265|vp8|vp9|ogg|gif> media formats"
-	echo "    -r <number>                frames"
-	echo "    -s <360|720|1080>          scale"
-	echo "    -i <file>                  input file"
-	echo "    -o <name>                  output file name (without extension)"
-	echo "    -t <name>                  title of the film"
-	echo "    -a <name>                  name of the artist"
-	echo "    -v                         display version"
+	echo "    -h                                        display this help and exit"
+	echo "    -f <all|h264|h265|av1|vp8|vp9|ogg|gif>    media formats"
+	echo "    -r <number>                               frames"
+	echo "    -s <360|720|1080>                         scale"
+	echo "    -i <file>                                 input file"
+	echo "    -o <name>                                 output file name (without extension)"
+	echo "    -t <name>                                 title of the film"
+	echo "    -a <name>                                 name of the artist"
+	echo "    -v                                        display version"
 	exit 0
 }
 
@@ -121,7 +121,7 @@ StartEncoding() {
 
 	case $FORMAT in
 		"all")
-			CreateVP8
+			CreateVP9
 			CreateH264
 			;;
 		"ogg")
@@ -139,6 +139,9 @@ StartEncoding() {
 		"h265")
 			CreateH265
 			;;
+		"av1")
+			CreateAV1
+			;;			
 		"gif")
 				CreateGif
 				;;
@@ -197,6 +200,15 @@ CreateH265() {
 	$CMD_FFMPEG -y -threads 0 -i $INPUTFILE -c:v libx265 -r $FRAMES -preset veryslow -b:v $VIDEOBITRATE -vf scale=-1:$SCALE -pass 2 -c:a libfdk_aac -b:a 192k -ar 44100 -strict experimental -metadata title="$TITLE" -metadata author="$AUTHOR" -f mp4 $OUTPUTNAME"_"$SCALE"_h265_two_pass.mp4"
 	# Constant Rate Factor (CRF)
 	$CMD_FFMPEG -y -threads 0 -i $INPUTFILE -c:v libx265 -r $FRAMES -preset veryslow -crf 17 -b:v $VIDEOBITRATE -vf scale=-1:$SCALE -c:a libfdk_aac -b:a 192k -ar 44100 -strict experimental -metadata title="$TITLE" -metadata author="$AUTHOR" -f mp4 $OUTPUTNAME"_"$SCALE"_h265_crf.mp4"
+}
+
+# -----
+# .mp4 | AV1
+# based on https://trac.ffmpeg.org/wiki/Encode/AV1
+# -----
+CreateAV1() {
+	# Constant Rate Factor (CRF)
+	$CMD_FFMPEG -y -threads 0 -i $INPUTFILE -c:v libaom-av1 -crf 17 -b:v 0 -r $FRAMES -vf scale=-1:$SCALE -c:a libfdk_aac -b:a 192k -ar 44100 -strict experimental -metadata title="$TITLE" -metadata author="$AUTHOR" -f mp4 $OUTPUTNAME"_"$SCALE"_av1_crf.mp4"
 }
 
 # -----
