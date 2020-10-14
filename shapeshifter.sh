@@ -143,8 +143,8 @@ StartEncoding() {
 			CreateAV1
 			;;			
 		"gif")
-				CreateGif
-				;;
+			CreateGif
+			;;
 		*)
 			echo "[!] Invalid option for media format: -$FORMAT" >&2
 			exit 4
