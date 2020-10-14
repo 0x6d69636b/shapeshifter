@@ -174,7 +174,7 @@ CreateVP9() {
 # -----
 CreateVP8() {
 	$CMD_FFMPEG -y -threads $THREADS -i $INPUTFILE -c:v libvpx -r $FRAMES -b:v $VIDEOBITRATE -vf scale=-1:$SCALE -pass 1 -speed 4 -g 9999 -c:a libopus -b:a 128k -f webm /dev/null
-	$CMD_FFMPEG -y -threads $THREADS -i $INPUTFILE -c:v libvpx -r $FRAMES -b:v $VIDEOBITRATE -vf scale=-1:$SCALE -pass 2 -speed 1 -auto-alt-ref 1 -lag-in-frames 25 -g 9999 -c:a libopus -b:a 128k -f webm -metadata title="$TITLE" -metadata author="$AUTHOR" $OUTPUTNAME"_"$SCALE".webm"
+	$CMD_FFMPEG -y -threads $THREADS -i $INPUTFILE -c:v libvpx -r $FRAMES -b:v $VIDEOBITRATE -vf scale=-1:$SCALE -pass 2 -speed 1 -auto-alt-ref 1 -lag-in-frames 25 -g 9999 -c:a libopus -b:a 128k -f webm -metadata title="$TITLE" -metadata author="$AUTHOR" $OUTPUTNAME"_"$SCALE"_vp8.webm"
 }
 
 # -----
@@ -183,10 +183,10 @@ CreateVP8() {
 # -----
 CreateH264() {
 	# Two-Pass	
-	$CMD_FFMPEG -y -threads 0 -i $INPUTFILE -c:v libx264 -r $FRAMES -vprofile high -preset veryslow -b:v $VIDEOBITRATE -vf scale=-1:$SCALE -pass 1 -c:a libfdk_aac -b:a 192k -ar 44100 -strict experimental -f mp4 /dev/null
-	$CMD_FFMPEG -y -threads 0 -i $INPUTFILE -c:v libx264 -r $FRAMES -vprofile high -preset veryslow -b:v $VIDEOBITRATE -vf scale=-1:$SCALE -pass 2 -c:a libfdk_aac -b:a 192k -ar 44100 -strict experimental -metadata title="$TITLE" -metadata author="$AUTHOR" -movflags +faststart -f mp4 $OUTPUTNAME"_"$SCALE"_two_pass.mp4"
+	#$CMD_FFMPEG -y -threads 0 -i $INPUTFILE -c:v libx264 -r $FRAMES -vprofile high -preset veryslow -b:v $VIDEOBITRATE -vf scale=-1:$SCALE -pass 1 -c:a libfdk_aac -b:a 192k -ar 44100 -strict experimental -f mp4 /dev/null
+	#$CMD_FFMPEG -y -threads 0 -i $INPUTFILE -c:v libx264 -r $FRAMES -vprofile high -preset veryslow -b:v $VIDEOBITRATE -vf scale=-1:$SCALE -pass 2 -c:a libfdk_aac -b:a 192k -ar 44100 -strict experimental -metadata title="$TITLE" -metadata author="$AUTHOR" -movflags +faststart -f mp4 $OUTPUTNAME"_"$SCALE"_two_pass.mp4"
 	# Constant Rate Factor (CRF)
-	$CMD_FFMPEG -y -threads 0 -i $INPUTFILE -c:v libx264 -r $FRAMES -vprofile high -preset veryslow -crf 17 -vf scale=-1:$SCALE -c:a libfdk_aac -b:a 192k -ar 44100 -strict experimental -metadata title="$TITLE" -metadata author="$AUTHOR" -movflags +faststart -f mp4 $OUTPUTNAME"_"$SCALE"_crf.mp4"
+	$CMD_FFMPEG -y -threads 0 -i $INPUTFILE -c:v libx264 -r $FRAMES -vprofile high -preset veryslow -crf 23 -b:v 0 -vf scale=-1:$SCALE -c:a libfdk_aac -b:a 192k -ar 44100 -strict experimental -metadata title="$TITLE" -metadata author="$AUTHOR" -movflags +faststart -f mp4 $OUTPUTNAME"_"$SCALE"_h264.mp4"
 }
 
 # -----
@@ -195,10 +195,10 @@ CreateH264() {
 # -----
 CreateH265() {
 	# Two-Pass
-	$CMD_FFMPEG -y -threads 0 -i $INPUTFILE -c:v libx265 -r $FRAMES -preset veryslow -b:v $VIDEOBITRATE -vf scale=-1:$SCALE -pass 1 -c:a libfdk_aac -b:a 192k -ar 44100 -strict experimental -f mp4 /dev/null
-	$CMD_FFMPEG -y -threads 0 -i $INPUTFILE -c:v libx265 -r $FRAMES -preset veryslow -b:v $VIDEOBITRATE -vf scale=-1:$SCALE -pass 2 -c:a libfdk_aac -b:a 192k -ar 44100 -strict experimental -metadata title="$TITLE" -metadata author="$AUTHOR" -movflags +faststart -f mp4 $OUTPUTNAME"_"$SCALE"_h265_two_pass.mp4"
+	#$CMD_FFMPEG -y -threads 0 -i $INPUTFILE -c:v libx265 -r $FRAMES -preset veryslow -b:v $VIDEOBITRATE -vf scale=-1:$SCALE -pass 1 -c:a libfdk_aac -b:a 192k -ar 44100 -strict experimental -f mp4 /dev/null
+	#$CMD_FFMPEG -y -threads 0 -i $INPUTFILE -c:v libx265 -r $FRAMES -preset veryslow -b:v $VIDEOBITRATE -vf scale=-1:$SCALE -pass 2 -c:a libfdk_aac -b:a 192k -ar 44100 -strict experimental -metadata title="$TITLE" -metadata author="$AUTHOR" -movflags +faststart -f mp4 $OUTPUTNAME"_"$SCALE"_h265_two_pass.mp4"
 	# Constant Rate Factor (CRF)
-	$CMD_FFMPEG -y -threads 0 -i $INPUTFILE -c:v libx265 -r $FRAMES -preset veryslow -crf 17 -vf scale=-1:$SCALE -c:a libfdk_aac -b:a 192k -ar 44100 -strict experimental -metadata title="$TITLE" -metadata author="$AUTHOR" -movflags +faststart -f mp4 $OUTPUTNAME"_"$SCALE"_h265_crf.mp4"
+	$CMD_FFMPEG -y -threads 0 -i $INPUTFILE -c:v libx265 -r $FRAMES -preset veryslow -crf 17  -b:v 0 -vf scale=-1:$SCALE -c:a libfdk_aac -b:a 192k -ar 44100 -strict experimental -metadata title="$TITLE" -metadata author="$AUTHOR" -movflags +faststart -f mp4 $OUTPUTNAME"_"$SCALE"_h265.mp4"
 }
 
 # -----
@@ -207,7 +207,7 @@ CreateH265() {
 # -----
 CreateAV1() {
 	# Constant Rate Factor (CRF)
-	$CMD_FFMPEG -y -threads 0 -i $INPUTFILE -c:v libaom-av1 -crf 17 -b:v 0 -r $FRAMES -vf scale=-1:$SCALE -c:a libfdk_aac -b:a 192k -ar 44100 -strict experimental -metadata title="$TITLE" -metadata author="$AUTHOR" -f mp4 $OUTPUTNAME"_"$SCALE"_av1_crf.mp4"
+	$CMD_FFMPEG -y -threads 0 -i $INPUTFILE -c:v libaom-av1 -crf 17 -b:v 0 -r $FRAMES -vf scale=-1:$SCALE -c:a libfdk_aac -b:a 192k -ar 44100 -strict experimental -metadata title="$TITLE" -metadata author="$AUTHOR" -f mp4 $OUTPUTNAME"_"$SCALE"_av1.mp4"
 }
 
 # -----
