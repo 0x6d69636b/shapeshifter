@@ -187,7 +187,6 @@ CreateH264() {
 	$CMD_FFMPEG -y -threads 0 -i $INPUTFILE -c:v libx264 -r $FRAMES -vprofile high -preset veryslow -b:v $VIDEOBITRATE -vf scale=-1:$SCALE -pass 2 -c:a libfdk_aac -b:a 192k -ar 44100 -strict experimental -metadata title="$TITLE" -metadata author="$AUTHOR" -f mp4 $OUTPUTNAME"_"$SCALE"_two_pass.mp4"
 	# Constant Rate Factor (CRF)
 	$CMD_FFMPEG -y -threads 0 -i $INPUTFILE -c:v libx264 -r $FRAMES -vprofile high -preset veryslow -crf 17 -b:v $VIDEOBITRATE -vf scale=-1:$SCALE -c:a libfdk_aac -b:a 192k -ar 44100 -strict experimental -metadata title="$TITLE" -metadata author="$AUTHOR" -f mp4 $OUTPUTNAME"_"$SCALE"_crf.mp4"
-	
 }
 
 # -----
