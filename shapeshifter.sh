@@ -2,15 +2,15 @@
 # -----
 # Name: shapeshifter
 # Autor: Mick (mick@threelions.ch)
-# Date: 26-03-2016
-# Version: 0.7.1
+# Date: 14-10-2020
+# Version: 0.7.3
 # -----
 
 # -----
 # Variables
 # -----
-VERSION="0.7.1"
-CMD_FFMPEG="/opt/ffmpeg/ffmpeg"
+VERSION="0.7.3"
+CMD_FFMPEG=`which ffmpeg`
 CMD_NPROC=`which nproc`
 THREADS=$((`$CMD_NPROC` - 1))
 FORMAT=""
@@ -179,8 +179,12 @@ CreateVP8() {
 # based on https://www.virag.si/2012/01/web-video-encoding-tutorial-with-ffmpeg-0-9/ | https://trac.ffmpeg.org/wiki/Encode/H.264
 # -----
 CreateH264() {
+	# Two-Pass	
 	$CMD_FFMPEG -y -threads 0 -i $INPUTFILE -c:v libx264 -r $FRAMES -vprofile high -preset veryslow -b:v $VIDEOBITRATE -vf scale=-1:$SCALE -pass 1 -c:a libfdk_aac -b:a 192k -ar 44100 -strict experimental -f mp4 /dev/null
-	$CMD_FFMPEG -y -threads 0 -i $INPUTFILE -c:v libx264 -r $FRAMES -vprofile high -preset veryslow -b:v $VIDEOBITRATE -vf scale=-1:$SCALE -pass 2 -c:a libfdk_aac -b:a 192k -ar 44100 -strict experimental -metadata title="$TITLE" -metadata author="$AUTHOR" -f mp4 $OUTPUTNAME"_"$SCALE".mp4"
+	$CMD_FFMPEG -y -threads 0 -i $INPUTFILE -c:v libx264 -r $FRAMES -vprofile high -preset veryslow -b:v $VIDEOBITRATE -vf scale=-1:$SCALE -pass 2 -c:a libfdk_aac -b:a 192k -ar 44100 -strict experimental -metadata title="$TITLE" -metadata author="$AUTHOR" -f mp4 $OUTPUTNAME"_"$SCALE"_twopass.mp4"
+	# Constant Rate Factor (CRF)
+	$CMD_FFMPEG -y -threads 0 -i $INPUTFILE -c:v libx264 -r $FRAMES -vprofile high -preset veryslow -crf 22 -b:v $VIDEOBITRATE -vf scale=-1:$SCALE -c:a libfdk_aac -b:a 192k -ar 44100 -strict experimental -metadata title="$TITLE" -metadata author="$AUTHOR" -f mp4 $OUTPUTNAME"_"$SCALE"_crf.mp4"
+	
 }
 
 # -----
