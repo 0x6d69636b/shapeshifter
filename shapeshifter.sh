@@ -2,14 +2,14 @@
 # -----
 # Name: shapeshifter
 # Autor: Mick (mick@threelions.ch)
-# Date: 14-10-2020
-# Version: 0.8.0
+# Date: 15-10-2020
+# Version: 0.8.1
 # -----
 
 # -----
 # Variables
 # -----
-VERSION="0.8.0"
+VERSION="0.8.1"
 CMD_FFMPEG=`which ffmpeg`
 CMD_NPROC=`which nproc`
 THREADS=$((`$CMD_NPROC` - 1))
@@ -32,7 +32,7 @@ VIDEOBITRATE=""
 Usage() {
 	echo "Usage: ${0##*/} [-hv] [-f FORMAT] [-r FRAMES] [-s SCALE] [-i FILE] [-o OUTPUT FILENAME] [-t TITLE] [-a ARTIST]..."
 	echo "    -h                                        display this help and exit"
-	echo "    -f <all|h264|h265|av1|vp8|vp9|ogg|gif>    media formats"
+	echo "    -f <web|h264|h265|av1|vp8|vp9|ogg|gif>    media formats"
 	echo "    -r <number>                               frames"
 	echo "    -s <360|720|1080>                         scale"
 	echo "    -i <file>                                 input file"
@@ -120,9 +120,10 @@ StartEncoding() {
 	esac
 
 	case $FORMAT in
-		"all")
+		"web")
 			CreateVP9
 			CreateH264
+			CreateH265
 			;;
 		"ogg")
 			CreateOgg
