@@ -30,6 +30,7 @@ VIDEOBITRATE=""
 # display help
 # -----
 Usage() {
+
 	echo "Usage: ${0##*/} [-hv] [-f FORMAT] [-r FRAMES] [-s SCALE] [-i FILE] [-o OUTPUT FILENAME] [-t TITLE] [-a ARTIST]..."
 	echo "    -h                                        display this help and exit"
 	echo "    -f <web|h264|h265|av1|vp8|vp9|ogg|gif>    media formats"
@@ -47,8 +48,7 @@ Usage() {
 # display version number
 # -----
 Version() {
-	echo -e "${0##*/} version $VERSION"
-	exit 0
+	echo -e "${0##*/} v$VERSION"
 }
 
 # -----
