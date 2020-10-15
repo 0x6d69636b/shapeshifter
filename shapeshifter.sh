@@ -1,4 +1,5 @@
 #!/usr/bin/sh
+
 # -----
 # Name: shapeshifter
 # Autor: Mick (mick@threelions.ch)
@@ -30,7 +31,6 @@ VIDEOBITRATE=""
 # display help
 # -----
 Usage() {
-
 	echo "Usage: ${0##*/} [-hv] [-f FORMAT] [-r FRAMES] [-s SCALE] [-i FILE] [-o OUTPUT FILENAME] [-t TITLE] [-a ARTIST]..."
 	echo "    -h                                        display this help and exit"
 	echo "    -f <web|h264|h265|av1|vp8|vp9|ogg|gif>    media formats"
@@ -41,7 +41,6 @@ Usage() {
 	echo "    -t <name>                                 title of the film"
 	echo "    -a <name>                                 name of the artist"
 	echo "    -v                                        display version"
-	exit 0
 }
 
 # -----
